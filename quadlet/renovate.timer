@@ -1,5 +1,5 @@
 [Unit]
-Description=Run Renovate Bot shard %i periodically
+Description=Run Renovate Bot periodically
 
 [Timer]
 OnCalendar=*:0/15

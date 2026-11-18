@@ -1,34 +1,38 @@
 [Unit]
-Description=Renovate Bot (shard %i)
+Description=Renovate Bot
 After=network-online.target
 Wants=network-online.target
 
 [Container]
-# The default name systemd-%N would contain `@`, which Podman rejects.
-ContainerName=renovate-%i
 Image=docker.io/renovate/renovate:full
 Pull=always
+Exec=node /opt/renovate-sharded/shard.mjs
 
 EnvironmentFile=.env
-EnvironmentFile=./shard-%i.env
 
+Environment=SHARD_SIZE=25
+Environment=SHARDS_MIN=1
+Environment=SHARDS_MAX=4
 Environment=TZ=Europe/Berlin
 #Environment=LOG_LEVEL=debug
 Environment=LOG_FORMAT=pretty
 Environment=RENOVATE_TIMEZONE=Europe/Berlin
 Environment=RENOVATE_PLATFORM=github
+Environment=RENOVATE_BASE_DIR=/tmp/renovate
 Environment=RENOVATE_PERSIST_REPO_DATA=true
 Environment=RENOVATE_REPOSITORY_CACHE=enabled
 Environment="RENOVATE_GIT_AUTHOR=Florian Hübner <fhuebner@posteo.de>"
 Environment=RENOVATE_AUTODISCOVER=true
+Environment=RENOVATE_AUTODISCOVER_FILTER=nothub/*
 Environment="RENOVATE_ABANDONMENT_THRESHOLD=1 year"
 Environment=RENOVATE_CONFIG_VALIDATION_ERROR=true
 Environment=RENOVATE_PR_CONCURRENT_LIMIT=10
 Environment=RENOVATE_PR_HOURLY_LIMIT=10
 
-Volume=renovate-%i:/tmp/renovate
+Volume=renovate-cache:/tmp/renovate
+Volume=./shard.mjs:/opt/renovate-sharded/shard.mjs:ro,z
 
 [Service]
-# Runs to completion from renovate@.timer. RemainAfterExit stays off, or the timer could not start it again.
+# Runs to completion from renovate.timer. RemainAfterExit stays off, or the timer could not start it again.
 Type=oneshot
 ExecStopPost=-/usr/bin/podman image prune --force --filter until=168h
