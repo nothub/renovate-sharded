@@ -4,9 +4,12 @@ Self-hosted [Renovate](https://docs.renovatebot.com/) with the autodiscovered re
 
 Each shard is a separate Renovate run with its own regex `autodiscoverFilter`, its own cache and its own schedule, so a slow shard does not hold up the others.
 
+## Platforms
+
 | Directory              | Runs on                                 |
 |------------------------|-----------------------------------------|
 | [`compose/`](compose/) | one host, Docker Compose + systemd timers |
+| [`quadlet/`](quadlet/) | one host, Podman Quadlets + systemd timers |
 | [`k8s/`](k8s/)         | Kubernetes, one CronJob per shard       |
 
 ## Shards

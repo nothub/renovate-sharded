@@ -1,0 +1,34 @@
+[Unit]
+Description=Renovate Bot (shard %i)
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+# The default name systemd-%N would contain `@`, which Podman rejects.
+ContainerName=renovate-%i
+Image=docker.io/renovate/renovate:full
+Pull=always
+
+EnvironmentFile=.env
+EnvironmentFile=./shard-%i.env
+
+Environment=TZ=Europe/Berlin
+#Environment=LOG_LEVEL=debug
+Environment=LOG_FORMAT=pretty
+Environment=RENOVATE_TIMEZONE=Europe/Berlin
+Environment=RENOVATE_PLATFORM=github
+Environment=RENOVATE_PERSIST_REPO_DATA=true
+Environment=RENOVATE_REPOSITORY_CACHE=enabled
+Environment="RENOVATE_GIT_AUTHOR=Florian Hübner <fhuebner@posteo.de>"
+Environment=RENOVATE_AUTODISCOVER=true
+Environment="RENOVATE_ABANDONMENT_THRESHOLD=1 year"
+Environment=RENOVATE_CONFIG_VALIDATION_ERROR=true
+Environment=RENOVATE_PR_CONCURRENT_LIMIT=10
+Environment=RENOVATE_PR_HOURLY_LIMIT=10
+
+Volume=renovate-%i:/tmp/renovate
+
+[Service]
+# Runs to completion from renovate@.timer. RemainAfterExit stays off, or the timer could not start it again.
+Type=oneshot
+ExecStopPost=-/usr/bin/podman image prune --force --filter until=168h
