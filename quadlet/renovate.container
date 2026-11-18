@@ -28,6 +28,7 @@ Environment="RENOVATE_ABANDONMENT_THRESHOLD=1 year"
 Environment=RENOVATE_CONFIG_VALIDATION_ERROR=true
 Environment=RENOVATE_PR_CONCURRENT_LIMIT=10
 Environment=RENOVATE_PR_HOURLY_LIMIT=10
+Environment='RENOVATE_ALLOWED_UNSAFE_EXECUTIONS=["gradleWrapper"]'
 
 Volume=renovate-cache:/tmp/renovate
 Volume=./shard.mjs:/opt/renovate-sharded/shard.mjs:ro,z
