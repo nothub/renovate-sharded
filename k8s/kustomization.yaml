@@ -6,9 +6,12 @@ namespace: renovate
 resources:
   - namespace.yaml
   - configmap.yaml
-  - shard-a.yaml
-  - shard-b.yaml
-  - shard-c.yaml
+  - renovate.yaml
+
+configMapGenerator:
+  - name: renovate-sharded
+    files:
+      - shard.mjs
 
 secretGenerator:
   - name: renovate

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: renovate-c
+  name: renovate
 spec:
   accessModes:
     - ReadWriteOnce
@@ -12,7 +12,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: renovate-c
+  name: renovate
 spec:
   schedule: '*/15 * * * *'
   concurrencyPolicy: Forbid
@@ -30,18 +30,23 @@ spec:
             - name: renovate
               image: renovate/renovate:full
               imagePullPolicy: Always
+              # args, not command: command would replace the image entrypoint that sets up the tool environment.
+              args: ['node', '/opt/renovate-sharded/shard.mjs']
               envFrom:
                 - configMapRef:
                     name: renovate
                 - secretRef:
                     name: renovate
-              env:
-                - name: RENOVATE_AUTODISCOVER_FILTER
-                  value: '/^nothub\/[^0-9a-m]/i'
               volumeMounts:
                 - name: cache
                   mountPath: /tmp/renovate
+                - name: script
+                  mountPath: /opt/renovate-sharded
+                  readOnly: true
           volumes:
             - name: cache
               persistentVolumeClaim:
-                claimName: renovate-c
+                claimName: renovate
+            - name: script
+              configMap:
+                name: renovate-sharded

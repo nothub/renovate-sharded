@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: renovate
 data:
+  SHARD_SIZE: '25'
+  SHARDS_MIN: '1'
+  SHARDS_MAX: '4'
   TZ: 'Europe/Berlin'
   #LOG_LEVEL: 'debug'
   LOG_FORMAT: 'pretty'
@@ -13,6 +16,7 @@ data:
   RENOVATE_REPOSITORY_CACHE: 'enabled'
   RENOVATE_GIT_AUTHOR: 'Florian Hübner <fhuebner@posteo.de>'
   RENOVATE_AUTODISCOVER: 'true'
+  RENOVATE_AUTODISCOVER_FILTER: 'nothub/*'
   RENOVATE_ABANDONMENT_THRESHOLD: '1 year'
   RENOVATE_CONFIG_VALIDATION_ERROR: 'true'
   RENOVATE_PR_CONCURRENT_LIMIT: '10'

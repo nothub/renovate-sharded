@@ -1,24 +1,22 @@
 # k8s
 
-Each shard is a CronJob with its own PersistentVolumeClaim for the cache. `concurrencyPolicy: Forbid` skips a schedule while the shard's previous run is still going, so only one pod uses a claim at a time.
+One CronJob with a PersistentVolumeClaim for the cache. Each run starts the shards inside the one pod. `concurrencyPolicy: Forbid` skips a schedule while the previous run is still going, so only one pod uses the claim at a time.
 
 ## Setup
 
 Copy `.env.example` to `.env` and fill in the token. Kustomize builds the `renovate` Secret from it.
 
-```
-kubectl --context <ctx> apply -k k8s/
-```
-
-The claims use the cluster's default StorageClass. Set `storageClassName` in the `shard-*.yaml` files to use another one.
-
-To run a shard now instead of waiting for its schedule:
+`shard.mjs` is a symlink to the repo root, which kustomize refuses to load by default, so build with the load restrictor off:
 
 ```
-kubectl --context <ctx> -n renovate create job --from=cronjob/renovate-a renovate-a-manual
-kubectl --context <ctx> -n renovate logs -f job/renovate-a-manual
+kubectl kustomize --load-restrictor LoadRestrictionsNone k8s/ | kubectl --context <ctx> apply -f -
 ```
 
-## Adding a shard
+The claim uses the cluster's default StorageClass. Set `storageClassName` in `renovate.yaml` to use another one.
 
-Copy a `shard-*.yaml`, replace the shard name in all four places and set the filter, then list the file in `kustomization.yaml`.
+To run now instead of waiting for the schedule:
+
+```
+kubectl --context <ctx> -n renovate create job --from=cronjob/renovate renovate-manual
+kubectl --context <ctx> -n renovate logs -f job/renovate-manual
+```
