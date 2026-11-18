@@ -7,8 +7,8 @@ Self-hosted [Renovate](https://docs.renovatebot.com/) with autodiscovered repos 
 | Directory              | Runs on                                  |
 |------------------------|------------------------------------------|
 | [`compose/`](compose/) | One host, Docker Compose + systemd timer |
-| [`quadlet/`](quadlet/) | One host, Podman Quadlet + systemd timer |
 | [`k8s/`](k8s/)         | Kubernetes, one CronJob                  |
+| [`quadlet/`](quadlet/) | One host, Podman Quadlet + systemd timer |
 
 All three run the stock Renovate image with [`shard.mjs`](shard.mjs) mounted as its command.
 
