@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: renovate-b
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: renovate-b
+spec:
+  schedule: '*/15 * * * *'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            # The image runs as uid 12021, fsGroup makes the volume writable for it.
+            fsGroup: 12021
+          containers:
+            - name: renovate
+              image: renovate/renovate:full
+              imagePullPolicy: Always
+              envFrom:
+                - configMapRef:
+                    name: renovate
+                - secretRef:
+                    name: renovate
+              env:
+                - name: RENOVATE_AUTODISCOVER_FILTER
+                  value: '/^nothub\/[g-m]/i'
+              volumeMounts:
+                - name: cache
+                  mountPath: /tmp/renovate
+          volumes:
+            - name: cache
+              persistentVolumeClaim:
+                claimName: renovate-b

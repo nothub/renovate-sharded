@@ -1,0 +1,52 @@
+x-renovate: &renovate
+  image: 'renovate/renovate:full'
+  restart: 'no'
+  pull_policy: 'always'
+  volumes:
+    - 'renovate-cache:/tmp/renovate'
+  env_file:
+    - '.env'
+
+# `<<` merges one level deep, so environment needs its own anchor to be merged per service.
+x-env: &env
+  TZ: 'Europe/Berlin'
+  #LOG_LEVEL: 'debug'
+  LOG_FORMAT: 'pretty'
+  RENOVATE_TIMEZONE: 'Europe/Berlin'
+  RENOVATE_PLATFORM: 'github'
+  RENOVATE_PERSIST_REPO_DATA: true
+  RENOVATE_REPOSITORY_CACHE: 'enabled'
+  RENOVATE_GIT_AUTHOR: 'Florian Hübner <fhuebner@posteo.de>'
+  RENOVATE_AUTODISCOVER: true
+  RENOVATE_ABANDONMENT_THRESHOLD: '1 year'
+  RENOVATE_CONFIG_VALIDATION_ERROR: true
+  RENOVATE_PR_CONCURRENT_LIMIT: 10
+  RENOVATE_PR_HOURLY_LIMIT: 10
+
+# Filters must partition nothub/*: the last shard is the complement of all others.
+# Shards run concurrently, so each gets its own base dir to keep caches apart.
+services:
+
+  renovate-a:
+    <<: *renovate
+    environment:
+      <<: *env
+      RENOVATE_BASE_DIR: '/tmp/renovate/a'
+      RENOVATE_AUTODISCOVER_FILTER: '/^nothub\/[0-9a-f]/i'
+
+  renovate-b:
+    <<: *renovate
+    environment:
+      <<: *env
+      RENOVATE_BASE_DIR: '/tmp/renovate/b'
+      RENOVATE_AUTODISCOVER_FILTER: '/^nothub\/[g-m]/i'
+
+  renovate-c:
+    <<: *renovate
+    environment:
+      <<: *env
+      RENOVATE_BASE_DIR: '/tmp/renovate/c'
+      RENOVATE_AUTODISCOVER_FILTER: '/^nothub\/[^0-9a-m]/i'
+
+volumes:
+  renovate-cache:
