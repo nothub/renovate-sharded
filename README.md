@@ -14,12 +14,12 @@ All three run the stock Renovate image with [`shard.mjs`](shard.mjs) mounted as 
 
 ## Shards
 
-Each run, `shard.mjs`:
+Each run, `shard.mjs` does the following:
 
-1. runs `renovate --write-discovered-repos`, so autodiscover and `autodiscoverFilter` work as usual,
-2. picks the shard count `clamp(ceil(repos / SHARD_SIZE), SHARDS_MIN, SHARDS_MAX)`,
-3. cuts the sorted repo list into that many equal chunks,
-4. runs one Renovate process per chunk in parallel, each with its own base dir `<RENOVATE_BASE_DIR>/<shard>`, and waits for all of them.
+1. It runs `renovate --write-discovered-repos`. Autodiscover and `autodiscoverFilter` work as usual.
+2. It picks the shard count as `clamp(ceil(repos / SHARD_SIZE), SHARDS_MIN, SHARDS_MAX)`.
+3. It cuts the sorted repo list into that many equal chunks.
+4. It runs one Renovate process per chunk in parallel and waits for all of them. Each process gets its own base dir `<RENOVATE_BASE_DIR>/<shard>`.
 
 | Variable     | Default | Meaning                    |
 |--------------|---------|----------------------------|
