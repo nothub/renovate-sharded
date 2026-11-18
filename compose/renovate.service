@@ -1,10 +1,10 @@
 [Unit]
-Description=Renovate Bot (shard %i)
+Description=Renovate Bot
 After=network-online.target docker.service
 Wants=network-online.target docker.service
 
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/services/renovate/
-ExecStart=/usr/bin/docker compose --ansi never --progress quiet run --no-TTY --quiet-pull --rm renovate-%i
+ExecStart=/usr/bin/docker compose --ansi never --progress quiet run --no-TTY --quiet-pull --rm renovate
 ExecStopPost=-/usr/bin/docker image prune --force --filter until=168h
