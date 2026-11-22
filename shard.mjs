@@ -62,8 +62,9 @@ const repos = JSON.parse(await readFile(listFile, 'utf8')).sort();
 const n = Math.min(max, Math.max(min, Math.ceil(repos.length / size)));
 console.log(`${repos.length} repos, ${n} shards`);
 
-// Contiguous chunks of the sorted list: a new repo moves at most one repo per chunk boundary,
-// so most repos keep their shard and its cache.
+// Split the sorted list into contiguous chunks. Adding or removing one repo then shifts
+// each chunk boundary by at most one position, so most repos stay in the same shard
+// and keep its RENOVATE_BASE_DIR cache. Changing the shard count reshuffles everything.
 const codes = await Promise.all(
   Array.from({ length: n }, (_, i) => {
     const chunk = repos.slice(Math.floor((i * repos.length) / n), Math.floor(((i + 1) * repos.length) / n));
