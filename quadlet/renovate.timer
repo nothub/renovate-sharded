@@ -2,7 +2,7 @@
 Description=Run Renovate Bot periodically
 
 [Timer]
-OnCalendar=*:0/15
+OnCalendar=*:0/10
 AccuracySec=1m
 RandomizedDelaySec=1m
 
