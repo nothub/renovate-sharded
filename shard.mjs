@@ -23,6 +23,18 @@ if (min > max) {
   process.exit(2);
 }
 
+// Per-repo config, e.g. {"owner/repo": {"allowedCommands": ["^make$"]}}. Renovate applies
+// global-only options from a repositories[] object entry to that repo alone, and they
+// replace the global value instead of merging with it.
+let overrides;
+try {
+  overrides = JSON.parse(process.env.REPO_OVERRIDES || '{}');
+} catch {}
+if (typeof overrides !== 'object' || overrides === null || Array.isArray(overrides)) {
+  console.error(`REPO_OVERRIDES must be a JSON object, got '${process.env.REPO_OVERRIDES}'`);
+  process.exit(2);
+}
+
 const baseDir = process.env.RENOVATE_BASE_DIR || '/tmp/renovate';
 const children = new Set();
 
@@ -71,7 +83,7 @@ const codes = await Promise.all(
     if (chunk.length === 0) return 0;
     return renovate(`shard-${i}`, [], {
       RENOVATE_AUTODISCOVER: 'false',
-      RENOVATE_REPOSITORIES: JSON.stringify(chunk),
+      RENOVATE_REPOSITORIES: JSON.stringify(chunk.map((repo) => (overrides[repo] ? { repository: repo, ...overrides[repo] } : repo))),
       RENOVATE_BASE_DIR: `${baseDir}/${i}`,
     });
   }),

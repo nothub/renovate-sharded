@@ -29,7 +29,7 @@ Environment=RENOVATE_CONFIG_VALIDATION_ERROR=true
 Environment=RENOVATE_PR_CONCURRENT_LIMIT=10
 Environment=RENOVATE_PR_HOURLY_LIMIT=10
 Environment='RENOVATE_ALLOWED_UNSAFE_EXECUTIONS=["goGenerate", "gradleWrapper", "mise"]'
-Environment='RENOVATE_ALLOWED_COMMANDS=["^\\\\./scripts/sync-k8s-versions\\\\.sh$$", "^\\\\./update-checksum\\\\.sh$$"]'
+Environment='REPO_OVERRIDES={"nothub/infra": {"allowedCommands": ["^\\\\./scripts/sync-k8s-versions\\\\.sh$$"]}, "nothub/ts3-docker": {"allowedCommands": ["^\\\\./update-checksum\\\\.sh$$"]}}'
 
 Volume=renovate-cache:/tmp/renovate
 Volume=./shard.mjs:/opt/renovate-sharded/shard.mjs:ro,z
