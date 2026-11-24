@@ -1,1 +1,1 @@
-../shard.mjs
+../k8s/shard.mjs

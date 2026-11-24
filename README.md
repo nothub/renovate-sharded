@@ -10,7 +10,7 @@ Self-hosted [Renovate](https://docs.renovatebot.com/) with autodiscovered repos 
 | [`k8s/`](k8s/)         | Kubernetes, one CronJob                  |
 | [`quadlet/`](quadlet/) | One host, Podman Quadlet + systemd timer |
 
-All three run the stock Renovate image with [`shard.mjs`](shard.mjs) mounted as its command.
+All three run the stock Renovate image with [`shard.mjs`](k8s/shard.mjs) mounted as its command. `compose/` and `quadlet/` symlink it from `k8s/`, since kustomize refuses to load files from outside its directory.
 
 ## Shards
 
