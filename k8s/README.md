@@ -18,3 +18,5 @@ To run now instead of waiting for the schedule:
 kubectl --context <ctx> -n renovate create job --from=cronjob/renovate renovate-manual
 kubectl --context <ctx> -n renovate logs -f job/renovate-manual
 ```
+
+`concurrencyPolicy: Forbid` counts only Jobs the CronJob created itself, so a manual Job can overlap a scheduled run, and both pods then share the cache claim. Check that no `renovate` pod is running before you create one.
