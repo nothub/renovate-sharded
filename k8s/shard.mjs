@@ -88,4 +88,5 @@ const codes = await Promise.all(
     });
   }),
 );
+
 process.exit(codes.some((code) => code !== 0) ? 1 : 0);
